@@ -4,12 +4,12 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 public class Settings {
 
     // check is word contains only ascii
-    private static boolean isAscii(String word) {
+    public static boolean isAscii(String word) {
         return CharMatcher.ASCII.matchesAllOf(word);
     }
 
     // check word length
-    private static boolean isValidLen(String word) {
+    public static boolean isValidLen(String word) {
         return word.length() >= MIN_WORD_LEN;
     }
 
