@@ -1,6 +1,8 @@
 import com.google.common.base.CharMatcher;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 
+import java.util.HashSet;
+
 public class Settings {
 
     // check is word contains only ascii
@@ -25,6 +27,21 @@ public class Settings {
             return true;
         }
         return false;
+    }
+
+
+    // convert String Set
+    public static HashSet<String> convertStrToSet(String words) {
+        HashSet<String> result = new HashSet<>();
+        for (String value: words.split(WORDS_DELIMITER)) {
+            result.add(value);
+        }
+        return result;
+    }
+
+    // convert Set to String
+    public static String convertSetToStr(HashSet<String> words) {
+        return String.join(Settings.WORDS_DELIMITER, words);
     }
 
     public static final String WORDS_DELIMITER = ":";

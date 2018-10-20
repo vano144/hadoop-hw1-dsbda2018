@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class LongestWordsReducerTest {
@@ -13,13 +14,15 @@ public class LongestWordsReducerTest {
     private List<LongWritable> lengths;
     private List<LongWritable> lowerLengths;
     private String maxWord = "test";
+    private HashSet<String> maxSet;
 
     @Before
     public void setUp() {
         reduceDriver = ReduceDriver.newReduceDriver(new LongestWordsReducer());
         lengths = new ArrayList<>();
         lowerLengths = new ArrayList<>();
-
+        maxSet = new HashSet<>();
+        maxSet.add(maxWord);
     }
 
     // test reducer behaviour for one max set
@@ -41,22 +44,30 @@ public class LongestWordsReducerTest {
         reduceDriver.runTest();
     }
 
-    // test reducer behaviour for multiple max set
+    // test reducer behaviour for multiple max set with repeats
     @Test
-    public void CorrectMultipleLongestWordsReducerTest() throws IOException {
+    public void CorrectMultipleWithRepeatsLongestWordsReducerTest() throws IOException {
         lengths.add(new LongWritable(maxWord.length()));
         lowerLengths.add(new LongWritable(3));
-        String maxWordSet1 = String.format("%s%s%s", maxWord, Settings.WORDS_DELIMITER, "ffff");
-        String maxWordSet2 = "zzzz";
-        String expected = String.format("%s%s%s", maxWordSet1, Settings.WORDS_DELIMITER,maxWordSet2);
+        String maxWordStrSet1 = String.format("%s%s%s", maxWord, Settings.WORDS_DELIMITER, "ffff");
+        String maxWordStrSet2 = "zzzz";
+        HashSet<String> maxWordSet1 = Settings.convertStrToSet(maxWordStrSet1);
+        HashSet<String> maxWordSet2 = Settings.convertStrToSet(maxWordStrSet2);
+        maxWordSet1.addAll(maxWordSet2);
         reduceDriver
                 .withInput(
-                        new Text(maxWordSet1),
+                        new Text(maxWordStrSet1),
+                        lengths
+                );
+        // add repeat here and set should save us
+        reduceDriver
+                .withInput(
+                        new Text(maxWordStrSet1),
                         lengths
                 );
         reduceDriver
                 .withInput(
-                        new Text(maxWordSet2),
+                        new Text(maxWordStrSet2),
                         lengths
                 );
         reduceDriver
@@ -69,7 +80,7 @@ public class LongestWordsReducerTest {
                         new Text("zzz"),
                         lowerLengths
                 );
-        reduceDriver.withOutput(new Text(expected), new LongWritable(maxWord.length()));
+        reduceDriver.withOutput(new Text(Settings.convertSetToStr(maxWordSet1)), new LongWritable(maxWord.length()));
         reduceDriver.runTest();
     }
 }

@@ -35,7 +35,6 @@ public class LongestWordsMapper
     @Override
     public void cleanup(Context context) throws IOException, InterruptedException {
         // write only the longest words in line
-        String result = String.join(Settings.WORDS_DELIMITER, words);
-        context.write(new Text(result), new LongWritable(maxLength));
+        context.write(new Text(Settings.convertSetToStr(words)), new LongWritable(maxLength));
     }
 }
