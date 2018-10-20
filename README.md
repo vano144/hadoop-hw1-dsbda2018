@@ -30,5 +30,5 @@ Before start, you shoud run next:
 
   ```python3 generate_file.py``` 
   
-It will generate random one file in `./input `
+It will generate random one file in `./input ` or manually add in the same directory. 
 
